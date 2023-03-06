@@ -44,15 +44,68 @@ regd_users.post("/login", (req,res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
     //Write your code here
+    let sessionUsername = req.session.authorization['username'];
+    //return res.status(208).json({message: "session username is _$sessionUserName"+sessionUserName});
     const isbn = req.params.isbn;
-    //if(books[isbn].review.username === req.body.username){
-        //books[isbn].review[req.body.username] = req.body.review;
-    //}
-    //req.body.review
-    //return res.status(300).json({message: "Review succesfully added"});
+    if(Object.keys(req.body).length !== 0){
+        //return res.status(208).json(req.body);
+
     if(books[isbn].reviews){
-        res.send(books[isbn].reviews[req.body.username]);
-    }else{res.send("no reviews");}
+        let userReviewExist = false;
+        //let keys ="";
+        for (const [key, value] of Object.entries(books[isbn].reviews)) {
+            //keys += " " + key;
+            if(key === sessionUsername){
+                userReviewExist = true;
+            }
+        }
+        //res.send(keys+" "+req.body.username);
+
+        if(!userReviewExist){
+            books[isbn].reviews[sessionUsername] = req.body.review;
+            return res.status(200).json({message: "Review added succesfully"});
+        }else{
+            books[isbn].reviews[sessionUsername] = req.body.review;
+            return res.status(200).json({message: "Review updated succesfully"});
+        }
+    }else{
+        return res.status(208).json({message: "Invalid review."});
+    }
+    }else{ 
+        return res.status(208).json({message: "Invalid review."});
+    }
+
+});
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    let sessionUsername = req.session.authorization['username'];
+    //return res.status(208).json({message: "session username is _$sessionUserName"+sessionUserName});
+    const isbn = req.params.isbn;
+    //if(Object.keys(req.body).length !== 0){
+        //return res.status(208).json(req.body);
+
+    if(books[isbn].reviews){
+        let userReviewExist = false;
+        //let keys ="";
+        for (const [key, value] of Object.entries(books[isbn].reviews)) {
+            //keys += " " + key;
+            if(key === sessionUsername){
+                userReviewExist = true;
+            }
+        }
+        //res.send(keys+" "+req.body.username);
+
+        if(!userReviewExist){
+            //books[isbn].reviews[sessionUsername] = req.body.review;
+            return res.status(208).json({message: "No reviews found!"});
+        }else{
+            delete books[isbn].reviews[sessionUsername];
+            return res.status(200).json({message: "Review deleted succesfully"});
+        }
+    }else{
+        return res.status(208).json({message: "Invalid review."});
+    }
+    
+
 });
 
 module.exports.authenticated = regd_users;
