@@ -12,14 +12,15 @@ public_users.post("/register", (req,res) => {
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
-  let myPromise1 = new Promise((resolve,reject) => {
-    res.send(JSON.stringify(books,null,4));
-    resolve("Promise 1 resolved");
-  });
-  myPromise1.then((successMessage) => {
-    console.log("From Callback " + successMessage)
-  });
+    //Write your code here
+    let listOfBooks;
+    let myPromise1 = new Promise((resolve,reject) => {
+        listOfBooks = JSON.stringify(books,null,4);
+        resolve(listOfBooks);
+    });
+    myPromise1.then((result) => {
+        return res.status(200).send(result);
+});
     
 });
 
@@ -27,14 +28,15 @@ public_users.get('/',function (req, res) {
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
   const isbn = req.params.isbn;
+  let booksByIsbn;
   
   let myPromise1 = new Promise((resolve,reject) => {
-    res.send(books[isbn]);
-    resolve("Promise 1 resolved");
+    booksByIsbn = books[isbn];
+    resolve(booksByIsbn);
   });
-  myPromise1.then((successMessage) => {
-    console.log("From Callback " + successMessage)
-  });
+  myPromise1.then((result) => {
+    return res.status(200).send(result);
+});
 });
   
 // Get book details based on author
@@ -48,35 +50,31 @@ public_users.get('/author/:author',function (req, res) {
                 booksByAuthor[key] = value;
             }
         }
-        
-        res.send(booksByAuthor) 
-        resolve("Promise 1 resolved");
-      });
-      myPromise1.then((successMessage) => {
-        console.log("From Callback " + successMessage)
-      });
+        //res.send(booksByAuthor) 
+        resolve(booksByAuthor);
+    });
+    myPromise1.then((result) => {
+        return res.status(300).send(result);
+    });
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  let booksByTitle = {};
+    //Write your code here
+    let booksByTitle = {};
 
-
-  let myPromise1 = new Promise((resolve,reject) => {
-    for (const [key, value] of Object.entries(books)) {
-        if(value.title === req.params.title){
-            booksByTitle[key] = value;
-        }
-    }
-  
-    res.send(booksByTitle);
-    resolve("Promise 1 resolved");
-  });
-  myPromise1.then((successMessage) => {
-    console.log("From Callback " + successMessage)
-  });
-
+    async function findBooksByTitle() {
+        let myPromise = new Promise(function(resolve, reject) {        
+            for (const [key, value] of Object.entries(books)) {
+                if(value.title === req.params.title){
+                    booksByTitle[key] = value;
+                }
+            } 
+            resolve(booksByTitle);
+        });
+    return res.status(200).send(await myPromise); 
+    };
+    findBooksByTitle();
 });
 
 //  Get book review
