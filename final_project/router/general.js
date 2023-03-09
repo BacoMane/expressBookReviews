@@ -24,13 +24,14 @@ public_users.post("/register", (req,res) => {
 public_users.get('/',function (req, res) {
     //Write your code here
     let listOfBooks;
-    let myPromise1 = new Promise((resolve,reject) => {
-        listOfBooks = JSON.stringify(books,null,4);
-        resolve(listOfBooks);
-    });
-    myPromise1.then((result) => {
-        return res.status(200).send(result);
-    });
+    async function findAllBooks() {
+        let myPromise = new Promise(function(resolve, reject) {        
+            listOfBooks = JSON.stringify(books,null,4);
+            resolve(listOfBooks);
+        });
+    return res.status(200).send(await myPromise); 
+    };
+    findAllBooks();
 });
 
 // Get book details based on ISBN

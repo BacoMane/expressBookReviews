@@ -56,7 +56,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     let sessionUsername = req.session.authorization['username'];
     //return res.status(208).json({message: "session username is _$sessionUserName"+sessionUserName});
     const isbn = req.params.isbn;
-    if(Object.keys(req.body).length !== 0){
+    if(Object.keys(req.params).length !== 0){
         //return res.status(208).json(req.body);
 
     if(books[isbn].reviews){
@@ -71,16 +71,16 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         //res.send(keys+" "+req.body.username);
 
         if(!userReviewExist){
-            books[isbn].reviews[sessionUsername] = req.body.review;
-            return res.status(200).json({message: "Review added succesfully"});
+            books[isbn].reviews[sessionUsername] = req.params.review;
+            return res.status(200).json({message: "Review added succesfully for book with isbn: "+isbn+" by user: "+sessionUsername});
         }else{
-            books[isbn].reviews[sessionUsername] = req.body.review;
-            return res.status(200).json({message: "Review updated succesfully"});
+            books[isbn].reviews[sessionUsername] = req.params.review;
+            return res.status(200).json({message: "Review updated succesfully for book with isbn: "+isbn+" by user: "+sessionUsername});
         }
     }else{
         return res.status(208).json({message: "Invalid review."});
     }
-    }else{ 
+    }else{  
         return res.status(208).json({message: "Invalid review."});
     }
 
@@ -108,7 +108,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
             return res.status(208).json({message: "No reviews found!"});
         }else{
             delete books[isbn].reviews[sessionUsername];
-            return res.status(200).json({message: "Review deleted succesfully"});
+            return res.status(200).json({message: "Review deleted succesfully by: "+sessionUsername+" for book: " +isbn});
         }
     }else{
         return res.status(208).json({message: "Invalid review."});
