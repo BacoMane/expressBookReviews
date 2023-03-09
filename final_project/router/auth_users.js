@@ -27,7 +27,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
     } else {
         return false;
     }
-}
+} 
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
